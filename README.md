@@ -1,2 +1,2 @@
 # DailyCode
-Daily algorithm practice code
+Daily practice code
