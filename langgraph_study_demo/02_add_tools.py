@@ -3,7 +3,7 @@ from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 import os
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 from langchain_core.utils.function_calling import convert_to_openai_tool
 
@@ -34,9 +34,7 @@ llm = ChatOpenAI(
 )
 
 # 3. 绑定工具
-openai_tools = [convert_to_openai_tool(tool) for tool in tools]
-llm_with_tools = llm.bind(tools=openai_tools)
-
+llm_with_tools = llm.bind_tools(tools)
 # =======================================
 #               节点定义
 # =======================================
