@@ -6,6 +6,7 @@ import os
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 from langchain_core.utils.function_calling import convert_to_openai_tool
+from langgraph.checkpoint.memory import MemorySaver
 
 # 环境设置
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
@@ -85,13 +86,15 @@ graph_builder.add_conditional_edges(
 # 工具执行后返回给chatbot
 graph_builder.add_edge("tools", "chatbot")
 
+# 增加存储器
+memory = MemorySaver() #在生产应用程序中，您可能会将其更改为使用SqliteSaver或PostgresSaver连接数据库。
 # 编译工作流
-graph = graph_builder.compile()
+graph = graph_builder.compile(checkpointer=memory) # <------- 添加内存检查点
 
 # =======================================
 #               可视化 & 执行
 # =======================================
-def save_graph_visualization(graph, filename="02.png"):
+def save_graph_visualization(graph, filename="03.png"):
     """保存工作流可视化"""
     try:
         graph_png = graph.get_graph().draw_mermaid_png()
@@ -103,12 +106,14 @@ def save_graph_visualization(graph, filename="02.png"):
 
 save_graph_visualization(graph)
 
+config = {"configurable": {"thread_id": "1"}} 
+
 def stream_graph_updates(user_input: str):
     """流式处理用户输入"""
     # 初始化对话状态
     state = {"messages": [HumanMessage(content=user_input)]}
     
-    for event in graph.stream(state):
+    for event in graph.stream(state, config=config): # <------- 添加配置参数
         for node, output in event.items():
             messages = output["messages"]
             last_msg = messages[-1]

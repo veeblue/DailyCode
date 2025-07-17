@@ -3,7 +3,7 @@ from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 import os
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 
 from langchain.schema import AIMessage
 import os
@@ -31,7 +31,7 @@ graph_builder.add_edge(START, 'chatbot')
 graph_builder.add_edge('chatbot', END)
 graph = graph_builder.compile()
 
-def save_graph_visualization(graph, filename="collaboration.png"):
+def save_graph_visualization(graph, filename="01.png"):
     """保存工作流图可视化"""
     try:
         graph_png = graph.get_graph().draw_mermaid_png()
@@ -41,7 +41,7 @@ def save_graph_visualization(graph, filename="collaboration.png"):
     except Exception as e:
         print(f"保存图片失败: {e}")
 
-save_graph_visualization(graph, "chatbot_workflow.png")
+save_graph_visualization(graph, "01.png")
 
 # 运行聊天机器人
 def stream_graph_updates(user_input: str):
