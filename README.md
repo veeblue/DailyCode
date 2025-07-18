@@ -1,2 +1,0 @@
-# DailyCode
-Daily practice code
